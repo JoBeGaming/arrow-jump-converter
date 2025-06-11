@@ -8,8 +8,6 @@ def main(file: str):
     with open(file, "r") as f:
         lines = parse(f.readlines())
     with open(file, "w") as f:
-        #for line in lines:
-        #    print(line)
         f.writelines(lines)
 
 
@@ -18,14 +16,10 @@ def clean(line: str) -> str:
 
 
 def parse(lines: list[str]) -> list[str]:
-    targets: dict[int, int] = {} # depth: line
+    targets: dict[int, int] = {} # depth: line (target)
 
     for index, line in enumerate(lines):
-        ln = line.split()
-        if not ln:
-            continue
-
-        for section in ln:
+        for section in line.split():
             if section.startswith("<"):
                 depth = len(line.split("|")[0])
                 targets[depth] = index
@@ -38,13 +32,11 @@ def parse(lines: list[str]) -> list[str]:
             lines[index] = clean(line)
             continue
 
-        if (
-            ln[0] in JUMP_INSTRUCTIONS and
-            ln[JUMP_INSTRUCTIONS[ln[0]]].startswith(TARGET_PLACEHOLDER)
-        ):
+        if ln[JUMP_INSTRUCTIONS[ln[0]]].startswith(TARGET_PLACEHOLDER):
             depth = len(line.split("|")[0])
             target = targets[depth]
             line = line.replace(TARGET_PLACEHOLDER, str(target))
+
         lines[index] = clean(line)
 
     return lines
