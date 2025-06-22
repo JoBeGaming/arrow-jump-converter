@@ -1,7 +1,10 @@
+# arrow jump parser
+
+# (c) JoBe, 2025
+
+
 JUMP_INSTRUCTIONS: dict[str, int] = {"BRH": 2, "JMP": 1} # Opcode of instructions that can jump
 TARGET_PLACEHOLDER: str = "[address]"
-COMMENT: str = "#" # Comment Symbol
-
 
 
 def main(file: str) -> None:
