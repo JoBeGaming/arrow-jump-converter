@@ -4,14 +4,14 @@ COMMENT: str = "#" # Comment Symbol
 
 
 
-def main(file: str):
+def main(file: str) -> None:
     with open(file, "r") as f:
         lines = parse(f.readlines())
     with open(file, "w") as f:
         f.writelines(lines)
 
 
-def clean(line: str) -> str:
+def cleanup(line: str) -> str:
     return line.replace("|", "").replace("<", "").replace("-", "")
 
 
@@ -37,7 +37,7 @@ def parse(lines: list[str]) -> list[str]:
             target = targets[depth]
             line = line.replace(TARGET_PLACEHOLDER, str(target))
 
-        lines[index] = clean(line)
+        lines[index] = cleanup(line)
 
     return lines
 
