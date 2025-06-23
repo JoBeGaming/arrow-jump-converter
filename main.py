@@ -3,8 +3,21 @@
 # (c) JoBe, 2025
 
 
-JUMP_INSTRUCTIONS: dict[str, int] = {"BRH": 2, "JMP": 1} # Opcode of instructions that can jump
+from typing import LiteralString
+
+
+__all__: list[str] = [
+    "main", 
+    "cleanup", 
+    "parse",
+    "JUMP_INSTRUCTIONS",
+    "TARGET_PLACEHOLDER",
+    "COMMENT"
+]
+
+JUMP_INSTRUCTIONS: dict[str, int] = {"BRH": 2, "JMP": 1} # Opcode of instructions that can jump (UPPER, even though instructions can be both)
 TARGET_PLACEHOLDER: str = "[address]"
+COMMENT: str = ";"
 
 
 def main(file: str) -> None:
@@ -15,34 +28,50 @@ def main(file: str) -> None:
 
 
 def cleanup(line: str) -> str:
-    return line.replace("|", "").replace("<", "").replace("-", "")
+    return line.replace("|", "").replace("<", "").replace("-", "").rstrip()
 
 
-def parse(lines: list[str]) -> list[str]:
-    targets: dict[int, int] = {} # depth: line (target)
+# O(n²) instead of O(n) -> ;(
+def parse(lines: list[str] | list[LiteralString]) -> list[str]:
+    idx = -1
+    target_depth = 0
+    target = 0
 
-    for index, line in enumerate(lines):
-        for section in line.split():
-            if section.startswith("<"):
-                depth = len(line.split("|")[0])
-                targets[depth] = index
+    for tline in lines:
+        tln = tline.upper().split()
 
-    for index, line in enumerate(lines):
-        depth = 0
-        ln = line.split()
-
-        if not ln or ln[0] not in JUMP_INSTRUCTIONS:
-            lines[index] = clean(line)
+        if not tln or tln[0].startswith(COMMENT):
+            continue
+        if not tln[0].replace(" ", "").replace("\n", "").replace("|", ""):
             continue
 
-        if ln[JUMP_INSTRUCTIONS[ln[0]]].startswith(TARGET_PLACEHOLDER):
-            depth = len(line.split("|")[0])
-            target = targets[depth]
-            line = line.replace(TARGET_PLACEHOLDER, str(target))
+        idx += 1
+        if "<" in tline:
+            for section in tln:
+                if section.startswith("<"):
+                    tline = tline.replace("\n", " ")
+                    target_depth = len(tline.split("-| ")[0])
+                    target = idx
 
-        lines[index] = cleanup(line)
+            sub_idx = -1
+            for ln in lines:
+                if ln:
+                    sub_idx += 1
 
-    return lines
+                if TARGET_PLACEHOLDER.upper() in ln.upper():
+                    ln = ln.replace("\n", " ")
+                    depth = len(ln.split("-| ")[0])
+                    if depth == target_depth:
+                        ln = ln.replace(TARGET_PLACEHOLDER, str(target))
+                        lines[sub_idx + 1] = cleanup(ln) # type: ignore
+
+        else:
+            continue
+
+    for idx in range(len(lines) - 1):
+        lines[idx] = cleanup(lines[idx]) # type: ignore
+
+    return lines # type: ignore # All this just because `split` returns a LiteralString :(
 
 
 if __name__ == "__main__":
