@@ -1,5 +1,8 @@
-# arrow-jump-parser
-Parse any Assembly like language, where addresses are covered by placeholders `[address]`.
+# arrow-jump-converter
+Convert any Assembly like language, where addresses are covered by placeholders like `[address]`. The placeholder, comment starting symbol and all instructions that can jump will can be set in `main.py`.  
+*Note that the code is not checked for validity*
+
+---
 
 Known limitations 
 > - Comments are **not** supported
