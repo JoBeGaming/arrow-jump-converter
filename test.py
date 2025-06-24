@@ -6,8 +6,8 @@
 import collections.abc
 
 
-from main import parse, cleanup, TARGET_PLACEHOLDER
-
+from main import parse, cleanup, TARGET_PLACEHOLDER, JUMP_INSTRUCTIONS
+JMP = list(JUMP_INSTRUCTIONS.keys())[0]
 
 def replace_ordered(string: str, replacements: collections.abc.Sequence[str], pattern: str = TARGET_PLACEHOLDER) -> str:
     res = ""
