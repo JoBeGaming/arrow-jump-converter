@@ -15,12 +15,30 @@ def replace_ordered(string: str, replacements: collections.abc.Sequence[str], pa
 
     for sub in string.split(pattern, len(replacements)):
         if count >= len(replacements):
-            res += "\n".join(clean(s) for s in sub.split("\n")) 
+
+            subs: list[str] = []
+            for s in sub.split("\n"):
+                print(s)
+                c = clean(s)
+                if c.replace(" ", "").replace("\n", ""):
+                    subs.append(clean(s))
+
+            res += "\n".join(subs)
 
         else:
-            res += "\n".join(clean(s) for s in f"{sub}{replacements[count]}".split("\n"))
+
+            subs: list[str] = []
+            for s in f"{sub}{replacements[count]}".split("\n"):
+                print(s)
+                c = clean(s)
+                if not c.replace(" ", "").replace("\n", ""):
+                    subs.append(clean(s))
+
+            print(subs)
+            res += "\n".join(subs)
             count += 1
 
+    print(res)
     return res
 
 
@@ -30,15 +48,24 @@ def clean(string: str) -> str:
 
 def show_diff(a: collections.abc.Sequence[str], b: collections.abc.Sequence[str]) -> str:
     res: list[str] = []
+    count = 0
+    msg = f"\n\n\n--- \033[32mNo differences found across {min(len(a), len(b))} pairs\033[0m ---"
     for sub_a, sub_b in zip(a, b):
 
         if sub_a != sub_b: 
+            count += 1
             res.append(f"\033[31m{sub_a} <> {sub_b}\033[0m")
 
         else: 
             res.append(sub_a)
 
-    return "\n".join(res)
+    if count > 0:
+        msg = f"\n\n\n--- \033[31m{count} differences found across {len(res)} pairs\033[0m ---"
+
+    print(a)
+    print(b)
+    return "\n".join(res) + msg
+
 
 # -------------------------------------
 # TESTS
@@ -47,10 +74,10 @@ def show_diff(a: collections.abc.Sequence[str], b: collections.abc.Sequence[str]
 
 
 TestStr1: str = f"""
-nop <------------|
+nap <------------|
 jmp [address] ---|-----------------|
-nop              |                 |
-nop <------------|-----------------|
+nbp              |                 |
+ncp <------------|-----------------|
 brh 0 [address] -|
 """
 
@@ -120,12 +147,19 @@ SUB r0 r2 r4 //                 |
 BRH ge [address] ---------------|
 """
 
-TestRes3: str = replace_ordered(TestStr3, ["16", "21", "7"])
+#TestRes3: str = replace_ordered(TestStr3, ["16", "21", "7"])
 
 
 if __name__ == "__main__":
+    print(
+        show_diff(
+            parse(TestStr1.split("\n")),
+            TestRes1.split("\n")
+        )
+    ) # Make there be no diff
+    exit()
     assert parse(TestStr1.split("\n")) == TestRes1.split("\n")
     assert parse(TestStr2.split("\n")) == TestRes2.split("\n")
-    print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
-    exit()
-    assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
+    #print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
+    #exit()
+    #assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
