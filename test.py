@@ -6,8 +6,8 @@
 import collections.abc
 
 
-from main import parse, cleanup, TARGET_PLACEHOLDER
-
+from main import parse, cleanup, TARGET_PLACEHOLDER, JUMP_INSTRUCTIONS
+JMP = list(JUMP_INSTRUCTIONS.keys())[0]
 
 def replace_ordered(string: str, replacements: collections.abc.Sequence[str], pattern: str = TARGET_PLACEHOLDER) -> str:
     res = ""
@@ -160,6 +160,12 @@ if __name__ == "__main__":
     exit()
     assert parse(TestStr1.split("\n")) == TestRes1.split("\n")
     assert parse(TestStr2.split("\n")) == TestRes2.split("\n")
-    #print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
-    #exit()
-    #assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
+<<<<<<< HEAD
+    print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
+    exit()
+    assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
+=======
+    print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
+    exit()
+    assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
+>>>>>>> 3d7e36f0ee5e8a41e873ed51ae7fe5f53c2e3890
