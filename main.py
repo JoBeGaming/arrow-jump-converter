@@ -10,10 +10,13 @@ __all__: list[str] = [
     "main", 
     "cleanup", 
     "parse",
+
+    # Note that these are mostly used for testing
     "JUMP_INSTRUCTIONS",
     "TARGET_PLACEHOLDER",
     "COMMENT"
 ]
+
 
 JUMP_INSTRUCTIONS: dict[str, int] = {"BRH": 2, "JMP": 1} # Opcode of instructions that can jump (UPPER, even though instructions can be both)
 TARGET_PLACEHOLDER: str = "[address]"
@@ -85,5 +88,6 @@ def parse(lines: list[str] | list[LiteralString]) -> list[str]:
     return res # type: ignore # All this just because `split` returns a LiteralString :(
 
 
+# Build a simple CLI to run the parser?
 if __name__ == "__main__":
     main(input("Please input the file name: "))
