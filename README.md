@@ -7,6 +7,6 @@ Convert any Assembly like language, where addresses are covered by placeholders 
 
 Known limitations:
 
-> - Comments are **not** supported
-> - Invalid Syntax is **not** brought up
+> - Comments are **not** supported <!--Fix this!-->
+> - Invalid Syntax is **not** brought up <!--Why should i bother?-->
 > - In some cases the 'depth' might be calculated incorrectly, but this **will** be fixed soon. <!--Actually fix this lol-->
