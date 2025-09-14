@@ -3,70 +3,25 @@
 # (c) JoBe, 2025
 
 
-import collections.abc
+import sys
+import os
+
+# Add the parent path to importable path.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from tools import (
+    replace_ordered,
+    show_diff,
+)
 
 
-from ajc import parse, cleanup, TARGET_PLACEHOLDER, JUMP_INSTRUCTIONS
+from ajc import convert
+from ajc.config import JUMP_INSTRUCTIONS
+
+
+
 
 JMP = list(JUMP_INSTRUCTIONS.keys())[0]
-
-
-def replace_ordered(string: str, replacements: collections.abc.Sequence[str], pattern: str = TARGET_PLACEHOLDER) -> str:
-    res = ""
-    count = 0
-
-    for sub in string.split(pattern, len(replacements)):
-        if count >= len(replacements):
-
-            subs: list[str] = []
-            for s in sub.split("\n"):
-                print(s)
-                c = clean(s)
-                if c.replace(" ", "").replace("\n", ""):
-                    subs.append(clean(s))
-
-            res += "\n".join(subs)
-
-        else:
-
-            subs: list[str] = []
-            for s in f"{sub}{replacements[count]}".split("\n"):
-                print(s)
-                c = clean(s)
-                if not c.replace(" ", "").replace("\n", ""):
-                    subs.append(clean(s))
-
-            print(subs)
-            res += "\n".join(subs)
-            count += 1
-
-    print(res)
-    return res
-
-
-def clean(string: str) -> str:
-    return cleanup(string)
-
-
-def show_diff(a: collections.abc.Sequence[str], b: collections.abc.Sequence[str]) -> str:
-    res: list[str] = []
-    count = 0
-    msg = f"\n\n\n--- \033[32mNo differences found across {min(len(a), len(b))} pairs\033[0m ---"
-    for sub_a, sub_b in zip(a, b):
-
-        if sub_a != sub_b: 
-            count += 1
-            res.append(f"\033[31m{sub_a} <> {sub_b}\033[0m")
-
-        else: 
-            res.append(sub_a)
-
-    if count > 0:
-        msg = f"\n\n\n--- \033[31m{count} differences found across {len(res)} pairs\033[0m ---"
-
-    print(a)
-    print(b)
-    return "\n".join(res) + msg
 
 
 # -------------------------------------
@@ -103,7 +58,7 @@ SUB r3 r1 r0
 ADD r3 r1 r1
 ADI r3 3
 
-SUB r0 r3 r0 //  <--------------|
+SUB r0 r3 r0     <--------------|
 BRH neg [address] ------|       |
 ADI r2 255              |       |
 SUB r7 r2 r4            |       |
@@ -145,29 +100,18 @@ STR r9 0 r6                     |
 STR r4 0 r6                     |
 STR r9 0 r5                     |
                                 |
-SUB r0 r2 r4 //                 |
+SUB r0 r2 r4                    |
 BRH ge [address] ---------------|
 """
 
-#TestRes3: str = replace_ordered(TestStr3, ["16", "21", "7"])
+TestRes3: str = replace_ordered(TestStr3, ["16", "21", "7"])
 
 
 if __name__ == "__main__":
-    print(
-        show_diff(
-            parse(TestStr1.split("\n")),
-            TestRes1.split("\n")
-        )
-    ) # Make there be no diff
-    exit()
-    assert parse(TestStr1.split("\n")) == TestRes1.split("\n")
-    assert parse(TestStr2.split("\n")) == TestRes2.split("\n")
-<<<<<<< HEAD
-    print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
-    exit()
-    assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
-=======
-    print(show_diff(TestRes3.split("\n"), parse(TestStr3.split("\n"))))
-    exit()
-    assert parse(TestStr3.split("\n")) == TestRes3.split("\n")
->>>>>>> 3d7e36f0ee5e8a41e873ed51ae7fe5f53c2e3890
+    for s, r in (
+        (TestStr1, TestRes1),
+        (TestStr2, TestRes2),
+        (TestStr3, TestRes3)
+    ):
+        if diff := show_diff(convert(s.split("\n")), r.split("\n")):
+            print(diff)
